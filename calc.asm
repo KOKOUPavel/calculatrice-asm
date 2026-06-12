@@ -5,6 +5,8 @@ section .data
     msg_usage_len  equ $ - msg_usage
     msg_divzero    db "Error: division by zero", 10
     msg_divzero_len equ $ - msg_divzero
+    msg_badop      db "Error: unknown operator", 10
+    msg_badop_len  equ $ - msg_badop
     msg_minus   db "-"
     newline     db 10
 
@@ -134,7 +136,7 @@ _start:
     je .mul
     cmp bl, '/'
     je .div
-    jmp .usage
+    jmp .badop
 
 .add:
     add eax, esi
@@ -165,6 +167,16 @@ _start:
 .print:
     call print_number
     jmp .exit
+
+.badop:
+    mov edx, msg_badop_len
+    mov ecx, msg_badop
+    mov ebx, 2
+    mov eax, 4
+    int 0x80
+    mov eax, 1
+    mov ebx, 1
+    int 0x80
 
 .usage:
     mov edx, msg_usage_len

@@ -157,6 +157,8 @@ _start:
     je .div
     cmp bl, '%'
     je .mod
+    cmp bl, '^'
+    je .pow
     jmp .badop
 
 .add:
@@ -180,6 +182,17 @@ _start:
     cdq
     idiv esi
     mov eax, edx
+    jmp .print
+.pow:
+    mov ecx, esi
+    mov esi, eax
+    mov eax, 1
+    test ecx, ecx
+    jz .print
+.pow_loop:
+    imul eax, esi
+    dec ecx
+    jnz .pow_loop
     jmp .print
 
 .divzero:

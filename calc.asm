@@ -161,6 +161,8 @@ _start:
     je .pow
     cmp bl, '&'
     je .and
+    cmp bl, '|'
+    je .or
     jmp .badop
 
 .add:
@@ -187,6 +189,9 @@ _start:
     jmp .print
 .and:
     and eax, esi
+    jmp .print
+.or:
+    or eax, esi
     jmp .print
 .pow:
     mov ecx, esi

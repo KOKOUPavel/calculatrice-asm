@@ -163,6 +163,8 @@ _start:
     je .and
     cmp bl, '|'
     je .or
+    cmp bl, 'x'
+    je .xor
     jmp .badop
 
 .add:
@@ -192,6 +194,9 @@ _start:
     jmp .print
 .or:
     or eax, esi
+    jmp .print
+.xor:
+    xor eax, esi
     jmp .print
 .pow:
     mov ecx, esi

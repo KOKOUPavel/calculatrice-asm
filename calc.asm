@@ -1,7 +1,3 @@
-; calc.asm - x86 32-bit Linux calculator
-; Usage: ./calc <num1> <op> <num2>
-; Example: ./calc 10 + 3
-
 section .data
     msg_result  db "Result: "
     msg_result_len equ $ - msg_result
@@ -16,9 +12,6 @@ section .bss
 section .text
     global _start
 
-; ── print_number ──────────────────────────────────────────────
-; Print integer in eax to stdout, preceded by "Result: "
-; Supports negative numbers
 print_number:
     push edi
     push esi
@@ -26,10 +19,10 @@ print_number:
     push edx
     push ebx
 
-    push eax                    ; save original (may be negative)
+    push eax
     test eax, eax
     jge .convert_start
-    neg eax                     ; work with absolute value
+    neg eax
 
 .convert_start:
     lea ecx, [buffer + 19]
@@ -45,7 +38,6 @@ print_number:
     test eax, eax
     jnz .convert
 
-    ; Print "Result: "
     push ecx
     mov edx, msg_result_len
     mov ecx, msg_result
@@ -54,7 +46,6 @@ print_number:
     int 0x80
     pop ecx
 
-    ; Print '-' if negative
     pop eax
     test eax, eax
     jge .print_digits
@@ -86,13 +77,9 @@ print_number:
     pop edi
     ret
 
-; ── atoi ──────────────────────────────────────────────────────
-; Convert null-terminated decimal string at [esi] to integer in eax
-; Supports leading '-' for negative numbers
-; Modifies: eax, esi, ecx, edx
 atoi:
     xor eax, eax
-    xor ecx, ecx                ; cl = sign flag
+    xor ecx, ecx
 
     cmp byte [esi], '-'
     jne .loop
@@ -118,28 +105,23 @@ atoi:
 .end:
     ret
 
-; ── _start ────────────────────────────────────────────────────
 _start:
     mov ebp, esp
 
     cmp dword [ebp], 4
     jne .usage
 
-    ; argv[1] -> num1 in edi
     mov esi, [ebp + 8]
     call atoi
     mov edi, eax
 
-    ; argv[2] -> operator char in bl
     mov esi, [ebp + 12]
     movzx ebx, byte [esi]
 
-    ; argv[3] -> num2 in esi
     mov esi, [ebp + 16]
     call atoi
     mov esi, eax
 
-    ; eax = num1 <op> num2
     mov eax, edi
 
     cmp bl, '+'

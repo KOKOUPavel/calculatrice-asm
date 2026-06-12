@@ -159,6 +159,8 @@ _start:
     je .mod
     cmp bl, '^'
     je .pow
+    cmp bl, '&'
+    je .and
     jmp .badop
 
 .add:
@@ -182,6 +184,9 @@ _start:
     cdq
     idiv esi
     mov eax, edx
+    jmp .print
+.and:
+    and eax, esi
     jmp .print
 .pow:
     mov ecx, esi

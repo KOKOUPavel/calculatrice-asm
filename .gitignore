@@ -1,0 +1,7 @@
+*.o
+calc
+calc_all
+div
+mul
+sub
+print_number

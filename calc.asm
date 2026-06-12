@@ -1,8 +1,10 @@
 section .data
     msg_result  db "Result: "
     msg_result_len equ $ - msg_result
-    msg_usage   db "Usage: ./calc <num1> <op> <num2>", 10
-    msg_usage_len equ $ - msg_usage
+    msg_usage      db "Usage: ./calc <num1> <op> <num2>", 10
+    msg_usage_len  equ $ - msg_usage
+    msg_divzero    db "Error: division by zero", 10
+    msg_divzero_len equ $ - msg_divzero
     msg_minus   db "-"
     newline     db 10
 
@@ -144,9 +146,21 @@ _start:
     imul eax, esi
     jmp .print
 .div:
+    test esi, esi
+    jz .divzero
     cdq
     idiv esi
     jmp .print
+
+.divzero:
+    mov edx, msg_divzero_len
+    mov ecx, msg_divzero
+    mov ebx, 2
+    mov eax, 4
+    int 0x80
+    mov eax, 1
+    mov ebx, 1
+    int 0x80
 
 .print:
     call print_number

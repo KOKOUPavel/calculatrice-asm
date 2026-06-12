@@ -155,6 +155,8 @@ _start:
     je .mul
     cmp bl, '/'
     je .div
+    cmp bl, '%'
+    je .mod
     jmp .badop
 
 .add:
@@ -171,6 +173,13 @@ _start:
     jz .divzero
     cdq
     idiv esi
+    jmp .print
+.mod:
+    test esi, esi
+    jz .divzero
+    cdq
+    idiv esi
+    mov eax, edx
     jmp .print
 
 .divzero:

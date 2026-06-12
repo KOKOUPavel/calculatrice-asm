@@ -7,11 +7,14 @@ section .data
     msg_divzero_len equ $ - msg_divzero
     msg_badop      db "Error: unknown operator", 10
     msg_badop_len  equ $ - msg_badop
+    msg_badarg     db "Error: invalid argument", 10
+    msg_badarg_len equ $ - msg_badarg
     msg_minus   db "-"
     newline     db 10
 
 section .bss
-    buffer resb 20
+    buffer    resb 20
+    parse_err resb 1
 
 section .text
     global _start
@@ -85,10 +88,19 @@ atoi:
     xor eax, eax
     xor ecx, ecx
 
+    mov byte [parse_err], 0
+
     cmp byte [esi], '-'
-    jne .loop
+    jne .check_first
     inc cl
     inc esi
+
+.check_first:
+    movzx edx, byte [esi]
+    cmp edx, '0'
+    jl .invalid
+    cmp edx, '9'
+    jg .invalid
 
 .loop:
     movzx edx, byte [esi]
@@ -101,6 +113,9 @@ atoi:
     add eax, edx
     inc esi
     jmp .loop
+
+.invalid:
+    mov byte [parse_err], 1
 
 .done:
     test cl, cl
@@ -117,6 +132,8 @@ _start:
 
     mov esi, [ebp + 8]
     call atoi
+    cmp byte [parse_err], 1
+    je .badarg
     mov edi, eax
 
     mov esi, [ebp + 12]
@@ -124,6 +141,8 @@ _start:
 
     mov esi, [ebp + 16]
     call atoi
+    cmp byte [parse_err], 1
+    je .badarg
     mov esi, eax
 
     mov eax, edi
@@ -167,6 +186,16 @@ _start:
 .print:
     call print_number
     jmp .exit
+
+.badarg:
+    mov edx, msg_badarg_len
+    mov ecx, msg_badarg
+    mov ebx, 2
+    mov eax, 4
+    int 0x80
+    mov eax, 1
+    mov ebx, 1
+    int 0x80
 
 .badop:
     mov edx, msg_badop_len

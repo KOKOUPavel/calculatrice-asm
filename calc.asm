@@ -118,6 +118,10 @@ atoi:
     mov byte [parse_err], 1
 
 .done:
+    cmp byte [esi], 0
+    je .sign
+    mov byte [parse_err], 1
+.sign:
     test cl, cl
     jz .end
     neg eax

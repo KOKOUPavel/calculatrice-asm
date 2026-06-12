@@ -165,6 +165,10 @@ _start:
     je .or
     cmp bl, 'x'
     je .xor
+    cmp bl, 'l'
+    je .shl
+    cmp bl, 'r'
+    je .shr
     jmp .badop
 
 .add:
@@ -197,6 +201,14 @@ _start:
     jmp .print
 .xor:
     xor eax, esi
+    jmp .print
+.shl:
+    mov ecx, esi
+    shl eax, cl
+    jmp .print
+.shr:
+    mov ecx, esi
+    sar eax, cl
     jmp .print
 .pow:
     mov ecx, esi
